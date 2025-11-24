@@ -74,9 +74,6 @@ def create_symbol_library():
     input_connector = add_20pin_2_54mm_connector()
     connector_symbols.append(input_connector)
 
-    # Read existing library to preserve R, C, GND symbols
-    library_path = '/home/user/adaperama/adapterama-symbols.kicad_sym'
-
     # Build the library header
     library_header = '''(kicad_symbol_lib
 \t(version 20231120)
@@ -84,40 +81,12 @@ def create_symbol_library():
 \t(generator_version "2.0")
 '''
 
-    # Read existing symbols we want to keep (R, C, GND)
-    with open(library_path, 'r') as f:
-        content = f.read()
-
-    # Extract R, C, GND symbols
-    existing_symbols = []
-    for symbol_name in ['R', 'C', 'GND']:
-        start = content.find(f'\t(symbol "{symbol_name}"')
-        if start != -1:
-            # Find the matching closing parenthesis
-            depth = 0
-            pos = start
-            symbol_start = start
-
-            while pos < len(content):
-                if content[pos] == '(':
-                    depth += 1
-                elif content[pos] == ')':
-                    depth -= 1
-                    if depth == 0:
-                        existing_symbols.append(content[symbol_start:pos+1])
-                        break
-                pos += 1
-
     # Combine everything
     full_library = library_header
 
     # Add all connector symbols
     for symbol in connector_symbols:
         full_library += symbol + '\n'
-
-    # Add existing symbols
-    for symbol in existing_symbols:
-        full_library += '\n' + symbol + '\n'
 
     # Close the library
     full_library += ')\n'
@@ -139,15 +108,13 @@ def main():
 
     print("=" * 60)
     print(f"Symbol library created: {output_path}")
-    print("\nSymbols included:")
+    print("\nConnector symbols included:")
     print("  - ARM_JTAG_20pin_2.54mm (input from J-Link)")
     print("  - ARM_JTAG_20pin_1.27mm (compact output)")
     print("  - TI_CTI_20pin_1.27mm (TI compact with EMU)")
     print("  - TI_JTAG_14pin_2.54mm (TI standard with EMU0/1)")
     print("  - Cortex_Debug_10pin_1.27mm (modern ARM SWD)")
-    print("  - R (resistor)")
-    print("  - C (capacitor)")
-    print("  - GND (ground symbol)")
+    print("\nNote: Use standard KiCad libraries for R, C, GND symbols")
 
 
 if __name__ == '__main__':

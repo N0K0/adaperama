@@ -257,7 +257,8 @@ All connector symbols are available in `adapterama-symbols.kicad_sym`:
 - TI_CTI_20pin_1.27mm - TI compact with EMU pins
 - TI_JTAG_14pin_2.54mm - TI standard with EMU0/1
 - Cortex_Debug_10pin_1.27mm - Modern ARM SWD
-- R, C, GND - Basic passive components
+
+**Note:** Use KiCad's standard libraries (Device library) for R, C, and GND symbols.
 
 To regenerate the symbol library:
 ```bash
