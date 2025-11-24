@@ -121,6 +121,62 @@ TI_14PIN_PINS = [
 ]
 
 # ============================================================================
+# ARM 14-pin JTAG 2.54mm - Legacy ARM JTAG
+# ============================================================================
+# Note: Legacy connector - superseded by ARM 20-pin connectors
+# - Missing TDO pin (critical limitation)
+# - Used on some older ARM hardware
+# - Not recommended for new designs
+
+ARM_14PIN_LEGACY_PINS = [
+    ('1', 'VTref', 'power_in', 'left'),
+    ('2', 'Vsupply', 'power_in', 'right'),
+    ('3', 'nTRST', 'input', 'left'),
+    ('4', 'GND', 'power_in', 'right'),
+    ('5', 'TDI', 'input', 'left'),
+    ('6', 'GND', 'power_in', 'right'),
+    ('7', 'TMS', 'input', 'left'),
+    ('8', 'GND', 'power_in', 'right'),
+    ('9', 'TCK', 'input', 'left'),
+    ('10', 'GND', 'power_in', 'right'),
+    ('11', 'RTCK', 'output', 'left'),
+    ('12', 'nRESET', 'open_collector', 'right'),
+    ('13', 'VTref', 'power_in', 'left'),
+    ('14', 'GND', 'power_in', 'right'),
+]
+
+# ============================================================================
+# TI 20-pin JTAG 2.54mm - Legacy TI JTAG
+# ============================================================================
+# Note: Legacy connector - superseded by TI 14-pin and cTI 20-pin
+# - No EMU pins (limitation for advanced debugging)
+# - Different pinout from ARM 20-pin (not compatible!)
+# - Pin 6 is KEY (mechanical keying)
+
+TI_20PIN_LEGACY_PINS = [
+    ('1', 'VTref', 'power_in', 'left'),
+    ('2', 'VTref', 'power_in', 'right'),
+    ('3', 'nTRST', 'input', 'left'),
+    ('4', 'TDIS', 'input', 'right'),
+    ('5', 'TDI', 'input', 'left'),
+    ('6', 'KEY', 'no_connect', 'right'),
+    ('7', 'TMS', 'input', 'left'),
+    ('8', 'GND', 'power_in', 'right'),
+    ('9', 'TCK', 'input', 'left'),
+    ('10', 'GND', 'power_in', 'right'),
+    ('11', 'RTCK', 'output', 'left'),
+    ('12', 'GND', 'power_in', 'right'),
+    ('13', 'TDO', 'output', 'left'),
+    ('14', 'GND', 'power_in', 'right'),
+    ('15', 'nRESET', 'open_collector', 'left'),
+    ('16', 'GND', 'power_in', 'right'),
+    ('17', 'NC', 'no_connect', 'left'),
+    ('18', 'GND', 'power_in', 'right'),
+    ('19', 'NC', 'no_connect', 'left'),
+    ('20', 'GND', 'power_in', 'right'),
+]
+
+# ============================================================================
 # Connector Metadata
 # ============================================================================
 
@@ -144,5 +200,15 @@ CONNECTOR_INFO = {
         'pins': TI_14PIN_PINS,
         'datasheet': 'connector-specs/TI-14pin-2.54mm.md',
         'description': 'TI 14-pin JTAG with EMU0/1',
+    },
+    'ARM_JTAG_14pin_2.54mm_Legacy': {
+        'pins': ARM_14PIN_LEGACY_PINS,
+        'datasheet': 'connector-specs/ARM-14pin-2.54mm.md',
+        'description': 'Legacy ARM 14-pin JTAG (older design)',
+    },
+    'TI_JTAG_20pin_2.54mm_Legacy': {
+        'pins': TI_20PIN_LEGACY_PINS,
+        'datasheet': 'connector-specs/TI-20pin-2.54mm.md',
+        'description': 'Legacy TI 20-pin JTAG (older design)',
     },
 }

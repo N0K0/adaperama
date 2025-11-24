@@ -114,6 +114,8 @@ def main():
     print("  - TI_CTI_20pin_1.27mm (TI compact with EMU)")
     print("  - TI_JTAG_14pin_2.54mm (TI standard with EMU0/1)")
     print("  - Cortex_Debug_10pin_1.27mm (modern ARM SWD)")
+    print("  - ARM_JTAG_14pin_2.54mm_Legacy (legacy ARM 14-pin)")
+    print("  - TI_JTAG_20pin_2.54mm_Legacy (legacy TI 20-pin)")
     print("\nNote: Use standard KiCad libraries for R, C, GND symbols")
 
 
