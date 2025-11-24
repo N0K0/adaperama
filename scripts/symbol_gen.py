@@ -1,5 +1,14 @@
 """
 KiCad symbol generation for connectors and passive components
+
+This module includes automatic overlap avoidance:
+- Calculates optimal symbol width based on pin name lengths
+- Adjusts left and right rectangle bounds independently
+- Positions Value and Datasheet properties to prevent overlap
+- Uses 10mil (0.254mm) grid alignment for cleaner symbols
+
+The overlap detection ensures that long pin names like "SWDIO/TMS",
+"SWCLK/TCK", and "GNDDetect" don't extend beyond the symbol rectangle.
 """
 
 
@@ -26,9 +35,27 @@ def create_pin(num, name, pin_type, side, y_pos):
 \t\t\t)'''
 
 
+def calculate_text_width(text, font_size=1.27):
+    """
+    Estimate the width of text in KiCad units (mm)
+
+    Args:
+        text: The text string
+        font_size: Font size in mm (default 1.27)
+
+    Returns:
+        Estimated width in mm
+    """
+    # KiCad uses proportional fonts, approximate width per character
+    # Average character width is roughly 0.6 * font_size
+    char_width = 0.6 * font_size
+    return len(text) * char_width
+
+
 def create_connector_symbol(name, datasheet, pins):
     """
-    Generate a complete connector symbol from pin definitions
+    Generate a complete connector symbol from pin definitions with automatic
+    overlap avoidance for pin names and properties.
 
     Args:
         name: Symbol name (e.g., "ARM_JTAG_20pin_1.27mm")
@@ -41,6 +68,26 @@ def create_connector_symbol(name, datasheet, pins):
     # Calculate vertical spacing and bounds
     pin_count = len(pins)
     y_spacing = 5.08  # Standard 200mil spacing
+
+    # Find maximum pin name length for each side
+    max_left_name_len = 0
+    max_right_name_len = 0
+
+    for num, pin_name, pin_type, side in pins:
+        name_width = calculate_text_width(pin_name)
+        if side == 'left':
+            max_left_name_len = max(max_left_name_len, name_width)
+        else:
+            max_right_name_len = max(max_right_name_len, name_width)
+
+    # Calculate rectangle width with padding
+    # Base width from pin connection point (2.54mm) + pin name offset (1.016mm) + text + margin (1mm)
+    left_width = max(7.62, 2.54 + 1.016 + max_left_name_len + 1.0)
+    right_width = max(7.62, 2.54 + 1.016 + max_right_name_len + 1.0)
+
+    # Round to nearest 0.254mm (10mil) grid
+    left_width = round(left_width / 0.254) * 0.254
+    right_width = round(right_width / 0.254) * 0.254
 
     # Calculate positions for each pin (alternating left/right)
     pin_defs = []
@@ -56,17 +103,35 @@ def create_connector_symbol(name, datasheet, pins):
     rect_top = y_start + 2.54
     rect_bottom = -(y_start + 2.54)
 
+    # Calculate property positions to avoid overlap
+    # Reference goes above the symbol
+    ref_y = rect_top + 1.27
+
+    # Value goes below - check if symbol name is long
+    value_width = calculate_text_width(name)
+    value_y = rect_bottom - 1.27
+    value_x = 0
+
+    # If symbol name is very long, offset it or move it down further
+    if value_width > (left_width + right_width - 2.0):
+        value_y = rect_bottom - 2.54  # Move further down
+
+    # Datasheet property position - offset to avoid overlap when visible
+    # Place it above and slightly offset from Reference
+    datasheet_x = 0.254
+    datasheet_y = rect_top + 2.794
+
     # Build symbol S-expression
     symbol = f'''
 \t(symbol "{name}"
 \t\t(pin_names (offset 1.016))
 \t\t(exclude_from_sim no) (in_bom yes) (on_board yes)
 \t\t(property "Reference" "J"
-\t\t\t(at 0 {rect_top + 1.27:.2f} 0)
+\t\t\t(at 0 {ref_y:.2f} 0)
 \t\t\t(effects (font (size 1.27 1.27)))
 \t\t)
 \t\t(property "Value" "{name}"
-\t\t\t(at 0 {rect_bottom - 1.27:.2f} 0)
+\t\t\t(at {value_x:.3f} {value_y:.2f} 0)
 \t\t\t(effects (font (size 1.27 1.27)))
 \t\t)
 \t\t(property "Footprint" ""
@@ -74,11 +139,11 @@ def create_connector_symbol(name, datasheet, pins):
 \t\t\t(effects (font (size 1.27 1.27)) hide)
 \t\t)
 \t\t(property "Datasheet" "{datasheet}"
-\t\t\t(at 0 0 0)
+\t\t\t(at {datasheet_x:.3f} {datasheet_y:.3f} 0)
 \t\t\t(effects (font (size 1.27 1.27)) hide)
 \t\t)
 \t\t(symbol "{name}_1_1"
-\t\t\t(rectangle (start -7.62 {rect_top:.2f}) (end 7.62 {rect_bottom:.2f})
+\t\t\t(rectangle (start -{left_width:.2f} {rect_top:.2f}) (end {right_width:.2f} {rect_bottom:.2f})
 \t\t\t\t(stroke (width 0.254) (type default))
 \t\t\t\t(fill (type background))
 \t\t\t)
