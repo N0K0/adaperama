@@ -48,31 +48,31 @@ ARM_20PIN_PINS = [
 # ============================================================================
 # TI CTI-20 1.27mm - Texas Instruments Compact JTAG
 # ============================================================================
-# Note: Different pinout from ARM standard!
-# - TMS on pin 1 instead of VTref
-# - VTref is NOT on connector (separate connection)
-# - Includes EMU0-3 pins for enhanced debugging
+# Note: Based on TI HTML table - Compact TI 20-Pin (cTI) column
+# - 1.27mm pin pitch, 2.54mm row pitch
+# - Includes EMU0-4 pins for enhanced debugging
+# - Different pinout from ARM standard!
 
 TI_CTI_20PIN_PINS = [
-    ('1', 'TMS', 'input', 'left'),
-    ('2', 'GND', 'power_in', 'right'),
+    ('1', 'SWDIO/TMS', 'bidirectional', 'left'),
+    ('2', 'nTRST', 'input', 'right'),
     ('3', 'TDI', 'input', 'left'),
-    ('4', 'GND', 'power_in', 'right'),
-    ('5', 'TDO', 'output', 'left'),
-    ('6', 'GND', 'power_in', 'right'),
-    ('7', 'TCK', 'input', 'left'),
+    ('4', 'TDIS', 'input', 'right'),
+    ('5', 'VTref', 'power_in', 'left'),
+    ('6', 'KEY', 'no_connect', 'right'),
+    ('7', 'SWO/TDO', 'output', 'left'),
     ('8', 'GND', 'power_in', 'right'),
-    ('9', 'nTRST', 'input', 'left'),
+    ('9', 'RTCK', 'output', 'left'),
     ('10', 'GND', 'power_in', 'right'),
-    ('11', 'nSRST', 'open_collector', 'left'),
+    ('11', 'SWCLK/TCK', 'input', 'left'),
     ('12', 'GND', 'power_in', 'right'),
     ('13', 'EMU0', 'bidirectional', 'left'),
     ('14', 'GND', 'power_in', 'right'),
-    ('15', 'EMU1', 'bidirectional', 'left'),
+    ('15', 'nRESET', 'open_collector', 'left'),
     ('16', 'GND', 'power_in', 'right'),
     ('17', 'EMU2', 'bidirectional', 'left'),
-    ('18', 'GND', 'power_in', 'right'),
-    ('19', 'EMU3', 'bidirectional', 'left'),
+    ('18', 'EMU3', 'bidirectional', 'right'),
+    ('19', 'EMU4', 'bidirectional', 'left'),
     ('20', 'GND', 'power_in', 'right'),
 ]
 
