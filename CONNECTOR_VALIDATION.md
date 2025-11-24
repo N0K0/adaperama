@@ -26,23 +26,23 @@ All pins match the HTML table:
 - Pin 13: TDO ✓
 - No EMU pins (correct) ✓
 
+### Compact TI 20-Pin (cTI) - ✅ CORRECTED
+**CORRECTED** - Now matches HTML table exactly:
+- Pin 1: SWDIO/TMS (bidirectional) ✓
+- Pin 2: nTRST ✓
+- Pin 3: TDI ✓
+- Pin 4: TDIS ✓
+- Pin 5: VTref ✓
+- Pin 6: KEY (mechanical keying) ✓
+- Pin 7: SWO/TDO ✓
+- Pin 11: SWCLK/TCK ✓
+- Pin 15: nRESET ✓
+- Pin 18: EMU3 (not GND) ✓
+- Pin 19: EMU4 (not EMU3) ✓
+- Supports both SWD and JTAG modes ✓
+- Pin pitch 1.27mm, row pitch 2.54mm ✓
+
 ## ⚠️ NEEDS VALIDATION
-
-### Compact TI 20-Pin (cTI) - POTENTIAL MISMATCH
-HTML Table shows:
-- Pin 1: SWDIO / TMS
-- Pin 2: nTRST
-- Pin 3: TDI
-- Pin 4: TDIS
-- Pin 7: SWO / TDO
-- Pin 11: SWCLK / TCK
-
-Current specification shows:
-- Pin 1: TMS (not SWDIO / TMS)
-- Pin 2: GND (not nTRST)
-- Appears to follow different pinout
-
-**QUESTION:** Are these the same connector or different variants?
 
 ### ARM 20-Pin (2.54mm)
 Need to verify:
