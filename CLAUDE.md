@@ -33,8 +33,20 @@ This is a KiCad hardware design project using KiCad 9.0.
 - `connector-specs/` - Detailed specifications for each JTAG connector type:
   - `ARM-20pin-1.27mm.md` - Compact ARM JTAG connector specification
   - `ARM-20pin-2.54mm.md` - Standard ARM JTAG connector (reference, used for J-Link input)
-  - `TI-CTI-20-1.27mm.md` - Texas Instruments CTI-20 connector specification
+  - `ARM-14pin-2.54mm.md` - Legacy ARM 14-pin JTAG connector (older design)
+  - `TI-CTI-20-1.27mm.md` - Texas Instruments CTI-20 connector specification (1.27mm pitch, 2.54mm row)
+  - `TI-20pin-2.54mm.md` - Legacy TI 20-pin JTAG connector (older design)
+  - `TI-14pin-2.54mm.md` - Texas Instruments 14-pin JTAG connector with EMU0/1 pins
   - `Cortex-10pin-1.27mm.md` - ARM Cortex Debug connector specification
+
+### Python Scripts
+- `scripts/` - Python utilities for generating KiCad files:
+  - `generate_schematic.py` - Main schematic generation script
+  - `create_connector_symbols.py` - Generate connector symbols for the library
+  - `connector_data.py` - Connector pin definitions and metadata
+  - `symbol_gen.py` - KiCad symbol generation functions
+  - `component_gen.py` - Component generation utilities
+  - `kicad_utils.py` - KiCad file format utilities
 
 ## Working with KiCad Files
 
@@ -228,14 +240,52 @@ In KiCad PCB editor:
 - Add mounting holes for strain relief if adapter will be permanently mounted
 - Leave clearance for ribbon cable bend radius
 
+## Supported Connectors
+
+The project includes complete specifications and KiCad symbols for these connectors:
+
+### Currently Implemented
+1. **ARM 20-pin 2.54mm** (ARM-20pin-2.54mm) - Standard ARM JTAG, J-Link input connector
+2. **ARM 20-pin 1.27mm** (ARM-20pin-1.27mm) - Compact ARM JTAG
+3. **TI CTI-20 1.27mm** (TI-CTI-20-1.27mm) - Texas Instruments Compact JTAG with EMU pins
+4. **ARM Cortex 10-pin 1.27mm** (Cortex-10pin-1.27mm) - Modern ARM SWD/JTAG debug
+5. **TI 14-pin 2.54mm** (TI-14pin-2.54mm) - TI standard JTAG with EMU0/1
+
+### Legacy Connectors (Older Designs)
+6. **ARM 14-pin 2.54mm Legacy** (ARM-14pin-2.54mm) - Legacy ARM JTAG (missing RTCK, no adaptive clocking)
+7. **TI 20-pin 2.54mm Legacy** (TI-20pin-2.54mm) - Legacy TI JTAG (no EMU pins)
+
+### KiCad Symbol Library
+
+All connector symbols are available in `adapterama-symbols.kicad_sym`:
+
+**Modern Connectors:**
+- ARM_JTAG_20pin_2.54mm - Input from J-Link debugger
+- ARM_JTAG_20pin_1.27mm - Compact ARM output
+- TI_CTI_20pin_1.27mm - TI compact with EMU pins
+- TI_JTAG_14pin_2.54mm - TI standard with EMU0/1
+- Cortex_Debug_10pin_1.27mm - Modern ARM SWD
+
+**Legacy Connectors:**
+- ARM_JTAG_14pin_2.54mm_Legacy - Legacy ARM 14-pin (older design, missing RTCK)
+- TI_JTAG_20pin_2.54mm_Legacy - Legacy TI 20-pin (older design, no EMU pins)
+
+**Note:** Use KiCad's standard libraries (Device library) for R, C, and GND symbols.
+
+To regenerate the symbol library:
+```bash
+python3 scripts/create_connector_symbols.py
+```
+
 ## Future Expansion Ideas
 
 Additional connector formats that could be added:
-- TI 14-pin 2.54mm JTAG
 - Tag-Connect TC2050 footprint (pogo-pin connector)
 - 6-pin SWD connector (minimal ARM debugging)
 - cJTAG 8-pin connector (TI compact JTAG)
 - SWD + UART combined connector (6-pin with serial console)
+- ARM 20-pin Cortex Debug + ETM (with trace signals)
+- MIPI 60-pin connector (high-speed trace)
 
 Enhanced features:
 - ESD protection diodes (e.g., TPD2E001)

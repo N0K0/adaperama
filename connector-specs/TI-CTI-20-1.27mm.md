@@ -1,14 +1,15 @@
 # TI CTI-20 JTAG Connector (1.27mm pitch)
 
 ## Overview
-The TI CTI-20 (Compact JTAG Interface - 20 pin) connector is Texas Instruments' compact JTAG debugging interface used with XDS debug probes. It features a 1.27mm pitch and includes TI-specific EMU (emulation) pins for enhanced debugging capabilities on TI processors.
+The TI CTI-20 (Compact JTAG Interface - 20 pin) connector is Texas Instruments' compact debugging interface used with XDS debug probes. It supports both SWD (Serial Wire Debug) and JTAG modes through dual-function pins, features a 1.27mm pin pitch with 2.54mm row spacing, and includes TI-specific EMU (emulation) pins for enhanced debugging capabilities on TI processors. The connector includes VTref for voltage sensing and RTCK for adaptive clocking support.
 
 ## Physical Specifications
-- **Connector Type:** 2x10 pin header
-- **Pitch:** 1.27mm (0.05")
+- **Connector Type:** 2x10 pin header (dual row)
+- **Pin Pitch:** 1.27mm (0.05") - along each row
+- **Row Pitch:** 2.54mm (0.1") - between the two rows
 - **Pin Count:** 20 pins
 - **Orientation:** 2 rows of 10 pins
-- **Keying:** Often uses shrouded connectors or pin removal
+- **Keying:** Pin 6 is KEY (mechanically keyed, no electrical connection)
 
 ## Common Part Numbers
 - Samtec: FTSH-110-01-L-DV-K (vertical)
@@ -19,25 +20,25 @@ The TI CTI-20 (Compact JTAG Interface - 20 pin) connector is Texas Instruments' 
 ## Pinout
 
 ### Signal Table
-| Pin | Signal       | Pin | Signal | Description                           |
-|-----|--------------|-----|--------|---------------------------------------|
-| 1   | TMS          | 2   | GND    | Test Mode Select                      |
-| 3   | TDI          | 4   | GND    | Test Data In                          |
-| 5   | TDO          | 6   | GND    | Test Data Out                         |
-| 7   | TCK          | 8   | GND    | Test Clock                            |
-| 9   | nTRST        | 10  | GND    | Test Reset (active low)               |
-| 11  | nSRST        | 12  | GND    | System Reset (active low)             |
-| 13  | EMU0         | 14  | GND    | Emulation Pin 0 (TI-specific)         |
-| 15  | EMU1         | 16  | GND    | Emulation Pin 1 (TI-specific)         |
-| 17  | EMU2/TDO_EN  | 18  | GND    | Emulation Pin 2 / TDO Enable          |
-| 19  | EMU3         | 20  | GND    | Emulation Pin 3 (TI-specific)         |
+| Pin | Signal       | Pin | Signal     | Description                           |
+|-----|--------------|-----|------------|---------------------------------------|
+| 1   | SWDIO/TMS    | 2   | nTRST      | SWD Data / Test Mode Select           |
+| 3   | TDI          | 4   | TDIS       | Test Data In / TDI State              |
+| 5   | VTref        | 6   | KEY        | Target Reference Voltage / Mech. Key  |
+| 7   | SWO/TDO      | 8   | GND        | SWO Trace / Test Data Out             |
+| 9   | RTCK         | 10  | GND        | Return Test Clock                     |
+| 11  | SWCLK/TCK    | 12  | GND        | SWD Clock / Test Clock                |
+| 13  | EMU0         | 14  | GND        | Emulation Pin 0 (TI-specific)         |
+| 15  | nRESET       | 16  | GND        | System Reset (active low)             |
+| 17  | EMU2         | 18  | EMU3       | Emulation Pin 2 / Emulation Pin 3     |
+| 19  | EMU4         | 20  | GND        | Emulation Pin 4 (TI-specific)         |
 
 ### Pin Diagram (Top View)
 ```
- ╔═══════════════════════╗
- ║  1  3  5  7  9 11 13 15 17 19  ║ Odd pins (signals)
- ║  2  4  6  8 10 12 14 16 18 20  ║ Even pins (all GND)
- ╚═══════════════════════╝
+ ╔════════════════════════════╗
+ ║  1  3  5  7  9 11 13 15 17 19  ║ Odd pins (mixed signals)
+ ║  2  4  6  8 10 12 14 16 18 20  ║ Even pins (mixed signals/GND)
+ ╚════════════════════════════╝
 ```
 
 ## Electrical Specifications
@@ -50,15 +51,16 @@ The TI CTI-20 (Compact JTAG Interface - 20 pin) connector is Texas Instruments' 
 - **Maximum Current per Pin:** 4-8mA (typical)
 
 ### Pull Resistor Requirements
-| Signal  | Pull Direction | Resistance | Required? | Notes                              |
-|---------|----------------|------------|-----------|------------------------------------|
-| TMS     | Pull-up        | 4.7kΩ-10kΩ | Yes       | Critical for proper operation      |
-| TDI     | Pull-up        | 4.7kΩ-10kΩ | Yes       | Prevents floating inputs           |
-| nTRST   | Pull-up        | 4.7kΩ-10kΩ | Yes       | Required by most TI devices        |
-| nSRST   | Pull-up        | 4.7kΩ-10kΩ | Yes       | Prevents spurious resets           |
-| TCK     | Pull-down      | 4.7kΩ-10kΩ | Optional  | Keeps clock low when idle          |
-| TDO     | None           | -          | No        | Driven by target                   |
-| EMU0-3  | Pull-up        | 4.7kΩ-10kΩ | Recommended| Target/processor dependent         |
+| Signal       | Pull Direction | Resistance | Required?   | Notes                              |
+|--------------|----------------|------------|-------------|------------------------------------|
+| SWDIO/TMS    | Pull-up        | 10kΩ       | Yes         | Critical for proper operation      |
+| TDI          | Pull-up        | 10kΩ       | Yes         | Prevents floating inputs           |
+| nTRST        | Pull-up        | 10kΩ       | Yes         | Required by most TI devices        |
+| nRESET       | Pull-up        | 10kΩ       | Yes         | Prevents spurious resets           |
+| SWCLK/TCK    | None           | -          | Optional    | Can add pull-down if needed        |
+| SWO/TDO      | None           | -          | No          | Driven by target                   |
+| TDIS         | Varies         | 10kΩ       | Target-dep. | Check target requirements          |
+| EMU0,2,3,4   | Pull-up        | 10kΩ       | Recommended | Target/processor dependent         |
 
 ### Series Resistors (Recommended)
 - **Value:** 33Ω - 47Ω on all signal lines
@@ -67,69 +69,94 @@ The TI CTI-20 (Compact JTAG Interface - 20 pin) connector is Texas Instruments' 
 
 ## Signal Descriptions
 
-### Standard JTAG Signals
-- **TCK (Test Clock):** Clock for JTAG operations, driven by debugger
-- **TMS (Test Mode Select):** Controls JTAG state machine
-- **TDI (Test Data In):** Serial data to target
-- **TDO (Test Data Out):** Serial data from target
-- **nTRST (Test Reset):** Resets JTAG TAP controller (active low)
-- **nSRST (System Reset):** Resets target system (active low)
+### Dual-Function Debug Signals (SWD/JTAG)
+This connector supports both SWD (Serial Wire Debug) and JTAG modes:
+
+- **SWDIO/TMS (Pin 1):**
+  - SWD mode: Bidirectional data signal
+  - JTAG mode: Test Mode Select (controls JTAG state machine)
+
+- **SWCLK/TCK (Pin 11):**
+  - SWD mode: Serial Wire Clock
+  - JTAG mode: Test Clock
+
+- **SWO/TDO (Pin 7):**
+  - SWD mode: Serial Wire Output (trace data)
+  - JTAG mode: Test Data Out (serial data from target)
+
+### JTAG-Only Signals
+- **TDI (Pin 3):** Test Data In - Serial data to target (JTAG mode only)
+- **TDIS (Pin 4):** TDI State - Control signal for TDI
+- **nTRST (Pin 2):** Test Reset (active low) - Resets JTAG TAP controller
+
+### System Control Signals
+- **nRESET (Pin 15):** System Reset (active low) - Resets target system
+- **RTCK (Pin 9):** Return Test Clock - Adaptive clocking support
 
 ### TI-Specific EMU Signals
-The EMU (emulation) pins provide additional debugging and control features:
+The EMU (emulation) pins provide additional debugging and control features. This connector provides EMU0, EMU2, EMU3, and EMU4 (note: no EMU1):
 
-- **EMU0:** Multi-purpose emulation signal
+- **EMU0 (Pin 13):** Multi-purpose emulation signal
   - Real-time breakpoint signal
   - Can trigger external events
+  - Cross-core triggering
   - Processor dependent functionality
 
-- **EMU1:** Multi-purpose emulation signal
-  - Real-time trace signal
-  - Event counter
+- **EMU2 (Pin 17):** Emulation signal
+  - Processor specific features
+  - May function as TDO enable on some devices
+  - Cross-triggering support
+
+- **EMU3 (Pin 18):** Emulation signal
+  - Advanced debugging features
   - Processor dependent functionality
+  - May be NC on some targets
 
-- **EMU2/TDO_EN:** Dual purpose
-  - Emulation signal (some processors)
-  - TDO buffer enable control
-  - Used to tri-state TDO when needed
-
-- **EMU3:** Additional emulation signal
+- **EMU4 (Pin 19):** Emulation signal
+  - Extended debugging capabilities
   - Processor specific features
   - May be NC on some targets
 
 ### EMU Pin Usage by Processor Family
-| Processor Family | EMU0        | EMU1        | EMU2        | EMU3    |
+| Processor Family | EMU0        | EMU2        | EMU3        | EMU4    |
 |------------------|-------------|-------------|-------------|---------|
-| C2000           | RTDX        | RTDX        | TDO_EN      | NC      |
-| C5000           | BIO         | DX          | CLKMD       | NC      |
-| C6000           | RTDXCLK     | RTDX        | TDO_EN      | NC      |
-| MSP430          | TEST/SBWTCK | RST/SBWTDIO | NC          | NC      |
-| ARM (Sitara)    | EMU0        | EMU1        | NC          | NC      |
+| C2000           | RTDX        | TDO_EN      | Cross-trig  | NC      |
+| C5000           | BIO         | CLKMD       | Cross-trig  | NC      |
+| C6000           | RTDXCLK     | TDO_EN      | Cross-trig  | NC      |
+| MSP430          | TEST/SBWTCK | NC          | NC          | NC      |
+| ARM (Sitara)    | EMU0        | EMU2        | EMU3        | EMU4    |
 
-## VTref Considerations
+## VTref and Power Considerations
 
-Unlike ARM 20-pin connectors, the TI CTI-20 does NOT include VTref on the 20-pin connector. VTref is typically:
-1. Sensed on a separate pin on the debug probe connector
-2. Provided via the target board's dedicated VTref connection
-3. Configured manually in the debugger software
+**VTref (Pin 5):** Target reference voltage
+- This pin senses the target board's I/O voltage level (typically 1.8V, 3.3V, or 5V)
+- All debug signals operate at this voltage level
+- Supplied BY the target board TO the debugger
+- Used to ensure proper signal level translation
+- Never drive voltage into this pin - it's an input to the debugger
 
-**For adapter design:** Include a VTref sense wire separate from the 20-pin connector, or document that VTref must be configured manually.
+**KEY (Pin 6):** Mechanical keying
+- Used for connector polarization to prevent incorrect insertion
+- No electrical connection
+- May be implemented as a missing pin or keyed shroud
 
 ## Pin Mapping from ARM 20-pin JTAG
 
 ### Signal Correspondence
-| Signal  | ARM 20-pin (2.54mm) | TI CTI-20 (1.27mm) | Notes                    |
-|---------|---------------------|--------------------|--------------------------|
-| TMS     | Pin 7               | Pin 1              | Direct mapping           |
-| TDI     | Pin 5               | Pin 3              | Direct mapping           |
-| TDO     | Pin 13              | Pin 5              | Direct mapping           |
-| TCK     | Pin 9               | Pin 7              | Direct mapping           |
-| nTRST   | Pin 3               | Pin 9              | Direct mapping           |
-| nRESET  | Pin 15              | Pin 11             | nSRST on TI              |
-| VTref   | Pin 1               | (separate)         | Not on CTI-20 connector  |
-| RTCK    | Pin 11              | N/A                | Not used on TI           |
-| EMU0-3  | N/A                 | Pins 13,15,17,19   | TI-specific additions    |
-| GND     | Even pins           | Even pins          | All even pins            |
+| Signal       | ARM 20-pin (2.54mm) | TI CTI-20 (1.27mm) | Notes                         |
+|--------------|---------------------|--------------------|-------------------------------|
+| TMS          | Pin 7               | Pin 1              | Dual-function SWDIO/TMS       |
+| TDI          | Pin 5               | Pin 3              | Direct mapping                |
+| TDO          | Pin 13              | Pin 7              | Dual-function SWO/TDO         |
+| TCK          | Pin 9               | Pin 11             | Dual-function SWCLK/TCK       |
+| nTRST        | Pin 3               | Pin 2              | Direct mapping                |
+| nRESET       | Pin 15              | Pin 15             | Same pin number               |
+| VTref        | Pin 1               | Pin 5              | Included in CTI-20            |
+| RTCK         | Pin 11              | Pin 9              | Included in CTI-20            |
+| TDIS         | N/A                 | Pin 4              | TI-specific TDI state control |
+| KEY          | N/A                 | Pin 6              | Mechanical keying             |
+| EMU0,2,3,4   | N/A                 | Pins 13,17,18,19   | TI-specific additions         |
+| GND          | Even pins           | Pins 8,10,12,14,16,20 | Some even pins only        |
 
 ## Usage Notes
 
@@ -137,23 +164,29 @@ Unlike ARM 20-pin connectors, the TI CTI-20 does NOT include VTref on the 20-pin
 When using this connector as an output on a JTAG adapter:
 
 1. **Required Connections:**
-   - All standard JTAG signals (TMS, TDI, TDO, TCK, nTRST, nSRST)
-   - Ground on all even pins
-   - Pull-ups on TMS, TDI, nTRST, nSRST (4.7kΩ recommended)
+   - All dual-function signals: SWDIO/TMS, SWCLK/TCK, SWO/TDO (supports both SWD and JTAG)
+   - JTAG-only signals: TDI, TDIS, nTRST
+   - System control: nRESET, RTCK
+   - Power: VTref (pin 5), GND (pins 8,10,12,14,16,20)
+   - KEY: Pin 6 should be mechanically keyed (no connection)
+   - Pull-ups on SWDIO/TMS, TDI, nTRST, nRESET (10kΩ to VTref recommended)
 
 2. **EMU Signals:**
-   - Can be left unconnected if only basic JTAG is needed
+   - EMU0, EMU2, EMU3, EMU4 on pins 13, 17, 18, 19
+   - Can be left unconnected if only basic JTAG/SWD is needed
    - Should be connected through for full TI debugging features
-   - Add pull-ups (4.7kΩ) if connecting EMU signals
+   - Add pull-ups (10kΩ to VTref) if connecting EMU signals
 
 3. **VTref Handling:**
-   - Provide separate VTref connection point
-   - Label clearly that VTref is NOT on the 20-pin connector
-   - Alternative: Document required debugger configuration
+   - VTref is on Pin 5 of this connector
+   - Must be sourced from the target board (never drive from debugger)
+   - Used for signal level translation
+   - All pull-ups should connect to VTref, not a fixed voltage
 
 4. **Series Resistors:**
    - 33Ω on all signal lines recommended
    - Protects against shorts and improves signal integrity
+   - Place near the input connector on adapter board
 
 ### Cable Considerations
 - Maximum cable length: 150mm recommended for speeds up to 10MHz
@@ -163,10 +196,12 @@ When using this connector as an output on a JTAG adapter:
 
 ### Target Board Requirements
 TI target boards using CTI-20 must:
-- Provide VTref to the debug probe (separate connection)
-- Include pull-ups on TMS, TDI, nTRST (if not on adapter)
+- Provide VTref on pin 5 (target voltage reference, typically 1.8V or 3.3V)
+- Include pull-ups on SWDIO/TMS, TDI, nTRST, nRESET (if not on adapter/debugger)
 - Connect appropriate EMU signals based on processor requirements
-- Provide solid ground connection
+- Implement mechanical keying on pin 6 to prevent reverse insertion
+- Provide solid ground connections on pins 8, 10, 12, 14, 16, 20
+- Support either SWD or JTAG mode (or both) based on processor capabilities
 
 ## Compatibility
 
