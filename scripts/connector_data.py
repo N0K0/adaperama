@@ -97,6 +97,30 @@ CORTEX_10PIN_PINS = [
 ]
 
 # ============================================================================
+# TI 14-pin JTAG 2.54mm - Texas Instruments Standard JTAG
+# ============================================================================
+# Note: Features EMU0/1 pins for cross-core triggering and advanced debug
+# - Commonly used with C2000, C5000, C6000 DSPs
+# - Pin 6 is KEY (mechanical keying)
+
+TI_14PIN_PINS = [
+    ('1', 'TMS', 'input', 'left'),
+    ('2', 'nTRST', 'input', 'right'),
+    ('3', 'TDI', 'input', 'left'),
+    ('4', 'TDIS', 'input', 'right'),
+    ('5', 'VTref', 'power_in', 'left'),
+    ('6', 'KEY', 'no_connect', 'right'),
+    ('7', 'TDO', 'output', 'left'),
+    ('8', 'GND', 'power_in', 'right'),
+    ('9', 'RTCK', 'output', 'left'),
+    ('10', 'GND', 'power_in', 'right'),
+    ('11', 'TCK', 'input', 'left'),
+    ('12', 'GND', 'power_in', 'right'),
+    ('13', 'EMU0', 'bidirectional', 'left'),
+    ('14', 'EMU1', 'bidirectional', 'right'),
+]
+
+# ============================================================================
 # Connector Metadata
 # ============================================================================
 
@@ -115,5 +139,10 @@ CONNECTOR_INFO = {
         'pins': CORTEX_10PIN_PINS,
         'datasheet': 'connector-specs/Cortex-10pin-1.27mm.md',
         'description': 'ARM Cortex SWD/JTAG Debug connector',
+    },
+    'TI_JTAG_14pin_2.54mm': {
+        'pins': TI_14PIN_PINS,
+        'datasheet': 'connector-specs/TI-14pin-2.54mm.md',
+        'description': 'TI 14-pin JTAG with EMU0/1',
     },
 }
