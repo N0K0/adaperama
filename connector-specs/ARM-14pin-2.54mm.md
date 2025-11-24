@@ -30,12 +30,12 @@ The ARM 14-pin JTAG connector is an older, compact debugging interface that was 
 ### Signal Table
 | Pin | Signal   | Pin | Signal     | Description |
 |-----|----------|-----|------------|-------------|
-| 1   | VTref    | 2   | Vsupply    | Target Reference / Supply Voltage |
+| 1   | VTref    | 2   | GND        | Target Reference / Ground |
 | 3   | nTRST    | 4   | GND        | Test Reset (active low) |
 | 5   | TDI      | 6   | GND        | Test Data In |
 | 7   | TMS      | 8   | GND        | Test Mode Select |
 | 9   | TCK      | 10  | GND        | Test Clock |
-| 11  | RTCK     | 12  | nRESET     | Return Test Clock / System Reset |
+| 11  | TDO      | 12  | SRST       | Test Data Out / System Reset |
 | 13  | VTref    | 14  | GND        | Target Reference / Ground |
 
 ### Pin Diagram (Top View)
@@ -65,35 +65,36 @@ The ARM 14-pin JTAG connector is an older, compact debugging interface that was 
 ### JTAG Signals
 - **TMS (Pin 7):** Test Mode Select - Controls TAP state machine
 - **TDI (Pin 5):** Test Data In - Serial data into device
-- **TDO:** Test Data Out - **Not available on this connector**
+- **TDO (Pin 11):** Test Data Out - Serial data from device
 - **TCK (Pin 9):** Test Clock - JTAG clock signal
 - **nTRST (Pin 3):** Test Reset (active low) - Resets TAP controller
-- **RTCK (Pin 11):** Return Test Clock - For adaptive clocking
+- **RTCK:** Return Test Clock - **Not available on this connector** (no adaptive clocking support)
 
 ### System Signals
-- **nRESET (Pin 12):** System Reset (active low) - Resets the target processor
-- **VTref (Pins 1, 13):** Target voltage reference - supplied by target board
-- **Vsupply (Pin 2):** Optional power supply from debugger (may be NC)
-- **GND (Pins 4, 6, 8, 10, 14):** Ground connections
+- **SRST (Pin 12):** System Reset (active low) - Resets the target processor
+- **VTref (Pins 1, 13):** Target voltage reference - supplied by target board (dual sensing)
+- **GND (Pins 2, 4, 6, 8, 10, 14):** Ground connections
 
 ## Comparison with ARM 20-Pin
 
 ### Missing Signals
 Compared to the standard ARM 20-pin connector, this legacy 14-pin version **does not include:**
-- **TDO (Test Data Out)** - Critical limitation!
+- **RTCK (Return Test Clock)** - No adaptive clocking support
 - Additional NC/Debug pins
 
 ### Key Limitation
-**The absence of TDO makes this connector unsuitable for full JTAG debugging.** It may have been used for:
-- Manufacturing/programming only (write-only operations)
-- Systems with alternative debug methods
-- Very early ARM designs with different debug architectures
+**The absence of RTCK means this connector cannot support adaptive clocking,** which is required for:
+- ARM9 and ARM11 processors
+- Devices with variable or gated debug clocks
+- Systems where TCK must be synchronized with the target
+
+However, this connector **does include TDO**, so it supports full JTAG debugging for devices that don't require adaptive clocking.
 
 ### Migration Path
 To upgrade from ARM 14-pin to ARM 20-pin:
-1. Add TDO connection (essential for debugging)
-2. Add proper ground pins for signal integrity
-3. Consider pin compatibility when designing adapters
+1. Add RTCK connection if adaptive clocking is needed
+2. Verify pin numbering differences
+3. Consider adding additional ground pins for better signal integrity
 
 ## Design Considerations
 
@@ -110,11 +111,8 @@ Recommended series resistors (33Ω) on:
 - TMS (Pin 7) - For protection
 
 ### Power Considerations
-- **Pin 2 (Vsupply):** May be connected to debugger power output or left NC
-  - If connected: Typically provides 3.3V or 5V from debugger
-  - Maximum current: Usually limited to 100-200mA
-  - Use for level shifting or isolated target power only
 - **Dual VTref (Pins 1, 13):** Provides voltage reference sensing on both ends
+- **Multiple GND connections:** Better signal integrity compared to minimal ground designs
 
 ## Usage Notes
 
@@ -125,33 +123,33 @@ Recommended series resistors (33Ω) on:
 
 ### When NOT to Use This Connector
 - **New designs** - Use ARM 20-pin or Cortex 10-pin instead
-- **Full JTAG debugging** - Missing TDO pin
-- **Production debugging** - Limited functionality
+- **ARM9/ARM11 processors** - Requires RTCK for adaptive clocking
+- **Devices needing adaptive clocking** - Missing RTCK pin
 
 ### Adapter Considerations
 When creating adapters from this legacy connector:
-1. **TDO must be sourced elsewhere** or debugging will be limited
-2. Check if pin 2 (Vsupply) is used or NC on target
-3. Verify nRESET functionality (some boards use different reset schemes)
+1. **RTCK must be sourced elsewhere** if adaptive clocking is needed
+2. Verify SRST vs nRESET naming conventions
+3. Pin numbering differs from ARM 20-pin - map carefully
 4. Consider signal integrity on longer connections
 
 ## Troubleshooting
 
 ### Common Issues
-1. **No Debug Connection - Missing TDO**
-   - This is expected - connector does not have TDO
-   - Cannot perform full JTAG boundary scan
-   - May work for programming-only operations
+1. **Adaptive Clocking Problems**
+   - This connector lacks RTCK
+   - Will not work with ARM9/ARM11 processors that require adaptive clocking
+   - Use ARM 20-pin or add RTCK separately if needed
 
 2. **Power Issues**
-   - Verify if pin 2 (Vsupply) should be connected or NC
    - Check VTref is present on both pins 1 and 13
-   - Ensure adequate ground connections
+   - Ensure adequate ground connections on all GND pins
+   - Verify dual VTref connections are properly wired
 
 3. **Signal Integrity**
-   - Limited ground pins compared to 20-pin connector
-   - Keep connections short
-   - May need additional ground wiring for longer cables
+   - Good ground distribution with multiple GND pins
+   - Keep connections short for best performance
+   - Verify all ground pins are connected
 
 ## Historical Context
 
@@ -161,10 +159,10 @@ When creating adapters from this legacy connector:
 - **Simplified manufacturing** - Easier to hand-solder in prototyping
 
 ### Why It Was Superseded
-- **Missing TDO** - Fatal flaw for full JTAG debugging
+- **Missing RTCK** - Cannot support adaptive clocking (required for ARM9/ARM11)
 - **Limited expandability** - No room for additional debug features
-- **Standardization** - Industry moved to 20-pin for compatibility
-- **Signal integrity** - Insufficient ground pins
+- **Standardization** - Industry moved to 20-pin for maximum compatibility
+- **Fewer pins** - Less flexible than 20-pin standard
 
 ## Related Connectors
 
@@ -203,4 +201,4 @@ If you must support this connector:
 - Migration guides to modern ARM debug connectors
 
 ### Important Note
-This connector specification is provided for **legacy hardware support only**. The absence of TDO severely limits debugging capabilities, and this connector should not be used for new designs.
+This connector specification is provided for **legacy hardware support only**. The absence of RTCK means it cannot support adaptive clocking (required for ARM9/ARM11 processors), and this connector should not be used for new designs.

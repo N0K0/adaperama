@@ -252,7 +252,7 @@ The project includes complete specifications and KiCad symbols for these connect
 5. **TI 14-pin 2.54mm** (TI-14pin-2.54mm) - TI standard JTAG with EMU0/1
 
 ### Legacy Connectors (Older Designs)
-6. **ARM 14-pin 2.54mm Legacy** (ARM-14pin-2.54mm) - Legacy ARM JTAG (missing TDO pin)
+6. **ARM 14-pin 2.54mm Legacy** (ARM-14pin-2.54mm) - Legacy ARM JTAG (missing RTCK, no adaptive clocking)
 7. **TI 20-pin 2.54mm Legacy** (TI-20pin-2.54mm) - Legacy TI JTAG (no EMU pins)
 
 ### KiCad Symbol Library
@@ -267,8 +267,8 @@ All connector symbols are available in `adapterama-symbols.kicad_sym`:
 - Cortex_Debug_10pin_1.27mm - Modern ARM SWD
 
 **Legacy Connectors:**
-- ARM_JTAG_14pin_2.54mm_Legacy - Legacy ARM 14-pin (older design, limited functionality)
-- TI_JTAG_20pin_2.54mm_Legacy - Legacy TI 20-pin (older design)
+- ARM_JTAG_14pin_2.54mm_Legacy - Legacy ARM 14-pin (older design, missing RTCK)
+- TI_JTAG_20pin_2.54mm_Legacy - Legacy TI 20-pin (older design, no EMU pins)
 
 **Note:** Use KiCad's standard libraries (Device library) for R, C, and GND symbols.
 

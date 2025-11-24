@@ -124,13 +124,13 @@ TI_14PIN_PINS = [
 # ARM 14-pin JTAG 2.54mm - Legacy ARM JTAG
 # ============================================================================
 # Note: Legacy connector - superseded by ARM 20-pin connectors
-# - Missing TDO pin (critical limitation)
+# - Missing RTCK pin (no adaptive clocking support)
 # - Used on some older ARM hardware
 # - Not recommended for new designs
 
 ARM_14PIN_LEGACY_PINS = [
     ('1', 'VTref', 'power_in', 'left'),
-    ('2', 'Vsupply', 'power_in', 'right'),
+    ('2', 'GND', 'power_in', 'right'),
     ('3', 'nTRST', 'input', 'left'),
     ('4', 'GND', 'power_in', 'right'),
     ('5', 'TDI', 'input', 'left'),
@@ -139,8 +139,8 @@ ARM_14PIN_LEGACY_PINS = [
     ('8', 'GND', 'power_in', 'right'),
     ('9', 'TCK', 'input', 'left'),
     ('10', 'GND', 'power_in', 'right'),
-    ('11', 'RTCK', 'output', 'left'),
-    ('12', 'nRESET', 'open_collector', 'right'),
+    ('11', 'TDO', 'output', 'left'),
+    ('12', 'SRST', 'open_collector', 'right'),
     ('13', 'VTref', 'power_in', 'left'),
     ('14', 'GND', 'power_in', 'right'),
 ]
